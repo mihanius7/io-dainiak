@@ -1,16 +1,16 @@
 package com.belhard.io;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.sql.SQLOutput;
+import com.belhard.util.StringUtil;
 
 public class Task1 {
     public static void main(String[] args) {
-        try {
-            FileReader fileReader = new FileReader("resources\\in\\text.txt");
-            System.out.println("File is opened!");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        String content = FileUtil.getContentFromFile("resources\\in\\text.txt");
+        System.out.println("File content: ");
+        System.out.println(content);
+
+        System.out.println("Filtered file content: ");
+        content = StringUtil.cleanSpaces(content);
+        System.out.println(content);
     }
+
 }
