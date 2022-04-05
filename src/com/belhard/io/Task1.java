@@ -1,6 +1,7 @@
 package com.belhard.io;
 
-import com.belhard.util.StringUtil;
+import com.belhard.io.util.FileUtil;
+import com.belhard.io.util.StringUtil;
 
 public class Task1 {
     public static void main(String[] args) {

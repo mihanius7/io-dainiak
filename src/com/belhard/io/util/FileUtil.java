@@ -1,4 +1,4 @@
-package com.belhard.io;
+package com.belhard.io.util;
 
 import java.io.*;
 
