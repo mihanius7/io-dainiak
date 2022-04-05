@@ -25,10 +25,18 @@ public class FileUtil {
 
     public static void saveToFile(String content, String fileName) {
         File file = new File(fileName);
-        try (FileWriter fileWriter = new FileWriter(file)) {
+        Path path = Paths.get(fileName).getParent();
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            FileWriter fileWriter = new FileWriter(file);
             fileWriter.append(content);
+            fileWriter.flush();
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }

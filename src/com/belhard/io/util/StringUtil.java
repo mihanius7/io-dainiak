@@ -67,8 +67,11 @@ public class StringUtil {
 
     public static String insertNewLines(String targetString, int rowMaxWidth, boolean wordsSafe) {
         String output = "";
-        Pattern regex;
-        regex = (wordsSafe) ? Pattern.compile(".{105} ?\\w{0,13}\\W?\\s?") : Pattern.compile(".{120}");
+        int lastWordLength = 13;
+        int rowMinWidth = rowMaxWidth - lastWordLength;
+        String wordsSafeRegexp = ".{" + rowMinWidth + "} ?\\w{1," + lastWordLength + "}\\W?\\s?";
+        String wordsIgnoreRegexp = ".{" + rowMaxWidth + "}";
+        Pattern regex = (wordsSafe) ? Pattern.compile(wordsSafeRegexp) : Pattern.compile(wordsIgnoreRegexp);
         Matcher matcher = regex.matcher(targetString);
         int matcherEnd = 0;
         while (matcher.find()) {
