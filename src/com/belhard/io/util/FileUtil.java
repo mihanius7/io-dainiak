@@ -111,7 +111,7 @@ public class FileUtil {
             System.out.println("Copying file: " + file.toString());
             copyFile(file.toString(), to);
         }
-        System.out.println("Copying completed!");
+        System.out.println("Copying finished!");
     }
 
     public static List<File> getFiles(String directory, String regexp) {

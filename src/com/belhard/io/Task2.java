@@ -6,6 +6,6 @@ import java.io.File;
 
 public class Task2 {
     public static void main(String[] args) {
-        FileUtil.copyFiles(".*\\.jpg$", "resources\\in\\", "resources\\out\\");
+        FileUtil.copyFiles(".*\\.jpeg|.*\\.jpg", "resources\\in\\", "resources\\out\\");
     }
 }
