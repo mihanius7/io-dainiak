@@ -1,16 +1,17 @@
 package com.belhard.io.util;
 
-import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
+
 public class FileUtil {
+    public static final String LOG_FILENAME = "LOG.txt";
+
     public static String getTextContentFromFile(String fileName) {
         StringBuilder content = new StringBuilder();
         try (FileReader fileReader = new FileReader(fileName)) {
@@ -105,34 +106,37 @@ public class FileUtil {
         saveToFile(content, targetFileName);
     }
 
-    public static void copyFiles(String fileNameRegexp, String from, String to) {
-        List<File> allFiles = getFiles(from, fileNameRegexp);
-        for (File file : allFiles) {
-            System.out.println("Copying file: " + file.toString());
-            copyFile(file.toString(), to);
-        }
-        System.out.println("Copying finished!");
-    }
-
     public static List<File> getFiles(String directory, String regexp) {
-        List<File> outputList = new ArrayList<>(0);
         File path = new File(directory);
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                if (name.matches(regexp)) {
-                    return true;
-                }
-                    return false;
-            }
-        };
-        List<File> allFilesList = Arrays.asList(path.listFiles(filter));
-        for (File file : allFilesList) {
+        if (!path.exists()) {
+            throw new RuntimeException("No directory found - " + directory);
+        }
+        List<File> outputList = new ArrayList<>(0);
+        FilenameFilter filter = (dir, name) -> name.matches(regexp);
+        File[] allFilesArray = path.listFiles(filter);
+        if (allFilesArray.length == 0) {
+            throw new RuntimeException("There is no files with name regexp " + regexp);
+        }
+        for (File file : allFilesArray) {
             if (file.isFile()) {
                 outputList.add(file);
             }
         }
-        System.out.println("files cnt in folder '" + path + "': " + outputList.size());
+        System.out.println("There is " + outputList.size() + " files in folder " + path + ". ");
         return outputList;
+    }
+
+    public static void copyFiles(String fileNameRegexp, String from, String to) {
+        long startTime = System.currentTimeMillis();
+        List<File> allFiles = getFiles(from, fileNameRegexp);
+        StringBuilder logContent = new StringBuilder("Copying progress: \n");
+        for (File file : allFiles) {
+            System.out.println("Copying file: " + file.toString());
+            copyFile(file.toString(), to);
+            logContent.append(LocalDateTime.now() + ": \n[" + file + "'] copied to [" + to + "]\n");
+        }
+        System.out.println("Copying finished!");
+        logContent.append(String.format("Elapsed time %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0));
+        saveToFile(logContent.toString(), to + LOG_FILENAME);
     }
 }
