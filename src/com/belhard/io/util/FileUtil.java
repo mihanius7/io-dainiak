@@ -1,5 +1,6 @@
 package com.belhard.io.util;
 
+import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +41,7 @@ public class FileUtil {
     }
 
     public static int[] getBytesContentFromFile(String fileName) {
+        long startTime = System.currentTimeMillis();
         List<Integer> bytesList = new ArrayList<>();
         try (FileInputStream input = new FileInputStream(fileName)) {
             int readByte = 0;
@@ -53,11 +55,26 @@ public class FileUtil {
         for (int i = 0; i < bytesArray.length; i++) {
             bytesArray[i] = bytesList.get(i);
         }
-        System.out.println("file size: " + bytesArray.length);
+        System.out.printf("Processed file size: %d bytes. \n", bytesArray.length);
+        System.out.printf("Reading time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
         return bytesArray;
     }
 
+    private static int defineFileSize(String fileName) {
+        List<Integer> bytesList = new ArrayList<>();
+        try (FileInputStream input = new FileInputStream(fileName)) {
+            int readByte = 0;
+            while ((readByte = input.read()) != -1) {
+                bytesList.add(readByte);
+            }
+        } catch (IOException openingException) {
+            openingException.printStackTrace();
+        }
+        return bytesList.size();
+    }
+
     public static void saveToFile(int[] content, String fileName) {
+        long startTime = System.currentTimeMillis();
         File file = new File(fileName);
         Path path = Paths.get(fileName).getParent();
         try {
@@ -73,5 +90,6 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.printf("Writing time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 }
