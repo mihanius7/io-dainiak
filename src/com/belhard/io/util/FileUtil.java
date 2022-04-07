@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class FileUtil {
@@ -93,9 +94,21 @@ public class FileUtil {
         System.out.printf("Writing time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
-    public static void copyFile(String fileName, String targetPath) {
+    public static void copyFile(String fileName, String to) {
         int[] content = getBytesContentFromFile(fileName);
-        String targetFileName = targetPath + Paths.get(fileName).getFileName();
+        Path newPath = Paths.get(to);
+        if (!Files.exists(newPath)) {
+            System.out.println("Directory will be created: " + newPath);
+        }
+        String targetFileName = to + Paths.get(fileName).getFileName();
         saveToFile(content, targetFileName);
+    }
+
+    public static void copyFiles(String fileMask, String from, String to) {
+        Path current = Paths.get(from);
+        Path target = Paths.get(to);
+
+        Iterator<Path> filePath = current.iterator();
+
     }
 }
