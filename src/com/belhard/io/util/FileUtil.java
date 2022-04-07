@@ -44,7 +44,7 @@ public class FileUtil {
 
     public static int[] getBytesContentFromFile(String fileName) {
         long startTime = System.currentTimeMillis();
-        List<Integer> bytesList = new ArrayList<>();
+        List<Integer> bytesList = new ArrayList<>(0);
         try (FileInputStream input = new FileInputStream(fileName)) {
             int readByte;
             while ((readByte = input.read()) != -1) {
@@ -57,13 +57,13 @@ public class FileUtil {
         for (int i = 0; i < bytesArray.length; i++) {
             bytesArray[i] = bytesList.get(i);
         }
-        System.out.printf("Processed file size: %d bytes. \n", bytesArray.length);
-        System.out.printf("Reading time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.printf("File size: %d bytes. \n", bytesArray.length);
+        System.out.printf("\tReading time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
         return bytesArray;
     }
 
-    private static int defineFileSize(String fileName) {
-        List<Integer> bytesList = new ArrayList<>();
+    public static int defineFileSize(String fileName) {
+        List<Integer> bytesList = new ArrayList<>(0);
         try (FileInputStream input = new FileInputStream(fileName)) {
             int readByte;
             while ((readByte = input.read()) != -1) {
@@ -92,7 +92,7 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf("Writing time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
+        System.out.printf("\tWriting time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
     public static void copyFile(String fileName, String to) {
@@ -106,8 +106,29 @@ public class FileUtil {
     }
 
     public static void copyFiles(String fileMask, String from, String to) {
-        File dir = new File(from);
-        List<File> files = Arrays.asList(dir.listFiles());
-        System.out.println("files cnt in folder '" + from + "': " + files.size());
+        List<File> allFiles = getFiles(from);
+        for (File file : allFiles) {
+            System.out.println("Copying file: " + file.toString());
+            copyFile(file.toString(), to);
+        }
+    }
+
+    public static List<File> getFiles(String directory) {
+        List<File> outputList = new ArrayList<>(0);
+        File path = new File(directory);
+        FilenameFilter filter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return true;
+            }
+        };
+        List<File> allFilesList = Arrays.asList(path.listFiles(filter));
+        for (File file : allFilesList) {
+            if (file.isFile()) {
+                outputList.add(file);
+            }
+        }
+        System.out.println("files cnt in folder '" + path + "': " + outputList.size());
+        return outputList;
     }
 }
