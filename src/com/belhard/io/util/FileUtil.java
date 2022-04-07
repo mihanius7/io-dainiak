@@ -44,7 +44,7 @@ public class FileUtil {
         long startTime = System.currentTimeMillis();
         List<Integer> bytesList = new ArrayList<>();
         try (FileInputStream input = new FileInputStream(fileName)) {
-            int readByte = 0;
+            int readByte;
             while ((readByte = input.read()) != -1) {
                 bytesList.add(readByte);
             }
@@ -63,7 +63,7 @@ public class FileUtil {
     private static int defineFileSize(String fileName) {
         List<Integer> bytesList = new ArrayList<>();
         try (FileInputStream input = new FileInputStream(fileName)) {
-            int readByte = 0;
+            int readByte;
             while ((readByte = input.read()) != -1) {
                 bytesList.add(readByte);
             }
@@ -82,8 +82,8 @@ public class FileUtil {
                 Files.createDirectories(path);
             }
             FileOutputStream output = new FileOutputStream(file);
-            for (int i = 0; i < content.length; i++) {
-                output.write(content[i]);
+            for (int j : content) {
+                output.write(j);
             }
             output.flush();
             output.close();
@@ -91,5 +91,11 @@ public class FileUtil {
             e.printStackTrace();
         }
         System.out.printf("Writing time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
+    }
+
+    public static void copyFile(String fileName, String targetPath) {
+        int[] content = getBytesContentFromFile(fileName);
+        String targetFileName = targetPath + Paths.get(fileName).getFileName();
+        saveToFile(content, targetFileName);
     }
 }
