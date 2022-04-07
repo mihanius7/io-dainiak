@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -105,10 +106,8 @@ public class FileUtil {
     }
 
     public static void copyFiles(String fileMask, String from, String to) {
-        Path current = Paths.get(from);
-        Path target = Paths.get(to);
-
-        Iterator<Path> filePath = current.iterator();
-
+        File dir = new File(from);
+        List<File> files = Arrays.asList(dir.listFiles());
+        System.out.println("files cnt in folder '" + from + "': " + files.size());
     }
 }
