@@ -105,21 +105,25 @@ public class FileUtil {
         saveToFile(content, targetFileName);
     }
 
-    public static void copyFiles(String fileMask, String from, String to) {
-        List<File> allFiles = getFiles(from);
+    public static void copyFiles(String fileNameRegexp, String from, String to) {
+        List<File> allFiles = getFiles(from, fileNameRegexp);
         for (File file : allFiles) {
             System.out.println("Copying file: " + file.toString());
             copyFile(file.toString(), to);
         }
+        System.out.println("Copying completed!");
     }
 
-    public static List<File> getFiles(String directory) {
+    public static List<File> getFiles(String directory, String regexp) {
         List<File> outputList = new ArrayList<>(0);
         File path = new File(directory);
         FilenameFilter filter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return true;
+                if (name.matches(regexp)) {
+                    return true;
+                }
+                    return false;
             }
         };
         List<File> allFilesList = Arrays.asList(path.listFiles(filter));
