@@ -102,7 +102,7 @@ public class FileUtil {
         Path sourcePathAndFile = Paths.get(fileNameString);
         Path sourceFile = Paths.get(fileNameString).getFileName();
         Path newPathAndFile = Paths.get(target + sourceFile);
-        Files.copy(sourcePathAndFile, newPathAndFile, StandardCopyOption.COPY_ATTRIBUTES);
+        Files.copy(sourcePathAndFile, newPathAndFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
     }
 
     public static List<File> getFilesInDirectory(String directory, String regexp) {
@@ -133,14 +133,11 @@ public class FileUtil {
             System.out.println("Copying file: " + file.toString());
             try {
                 copyFile(file.toString(), to);
-            } catch (FileAlreadyExistsException e) {
-                System.out.println("There is already file " + file + ". \n\t" + e);
-                logContent.append(LocalDateTime.now() + ": WARNING! \n[" + file + "'] is already exist. \n");
             } catch (IOException e) {
                 System.out.println("Can not copy file " + file + ". \n\t" + e);
-                logContent.append(LocalDateTime.now() + ": ERROR! \n[" + file + "'] can not copy to [" + to + "]\n");
+                logContent.append(String.format("ERROR: %25.25s (%.1f Kb) can not copy to [%s] at %s; \n", file, file.length() / 1024.0, to, LocalDateTime.now()));
             }
-            logContent.append(String.format("%s: \n[%s] (size %.1f Kb) copied to [%s]\n", LocalDateTime.now(), file.getName(), file.length() / 1024.0, to));
+            logContent.append(String.format("%32.32s (%.1f Kb) copied to [%s] at %s; \n", file.getName(), file.length() / 1024.0, to, LocalDateTime.now()));
         }
         System.out.println("Copying finished!");
         logContent.append(String.format("Elapsed time %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0));
