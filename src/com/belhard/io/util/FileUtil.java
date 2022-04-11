@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,14 +97,15 @@ public class FileUtil {
         System.out.printf("\tWriting time: %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0);
     }
 
-    public static void copyFile(String fileName, String to) {
-        int[] content = getBytesContentFromFile(fileName);
-        Path newPath = Paths.get(to);
+    public static void copyFile(String fileNameString, String target) throws IOException {
+        Path newPath = Paths.get(target);
         if (!Files.exists(newPath)) {
             System.out.println("Directory will be created: " + newPath);
         }
-        String targetFileName = to + Paths.get(fileName).getFileName();
-        saveToFile(content, targetFileName);
+        Path sourcePath = Paths.get(fileNameString);
+        Path sourceFile = Paths.get(fileNameString).getFileName();
+        Path newFile = Paths.get(target + sourceFile);
+        Files.copy(sourcePath, newFile, StandardCopyOption.COPY_ATTRIBUTES);
     }
 
     public static List<File> getFiles(String directory, String regexp) {
@@ -132,7 +134,11 @@ public class FileUtil {
         StringBuilder logContent = new StringBuilder("Copying progress: \n");
         for (File file : allFiles) {
             System.out.println("Copying file: " + file.toString());
-            copyFile(file.toString(), to);
+            try {
+                copyFile(file.toString(), to);
+            } catch (IOException e) {
+                System.out.println("Can not copy file " + file + ". \n\t" + e);
+            }
             logContent.append(LocalDateTime.now() + ": \n[" + file + "'] copied to [" + to + "]\n");
         }
         System.out.println("Copying finished!");
