@@ -1,10 +1,7 @@
 package com.belhard.io.util;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,13 +99,13 @@ public class FileUtil {
         if (!Files.exists(newPath)) {
             System.out.println("Directory will be created: " + newPath);
         }
-        Path sourcePath = Paths.get(fileNameString);
+        Path sourcePathAndFile = Paths.get(fileNameString);
         Path sourceFile = Paths.get(fileNameString).getFileName();
-        Path newFile = Paths.get(target + sourceFile);
-        Files.copy(sourcePath, newFile, StandardCopyOption.COPY_ATTRIBUTES);
+        Path newPathAndFile = Paths.get(target + sourceFile);
+        Files.copy(sourcePathAndFile, newPathAndFile, StandardCopyOption.COPY_ATTRIBUTES);
     }
 
-    public static List<File> getFiles(String directory, String regexp) {
+    public static List<File> getFilesInDirectory(String directory, String regexp) {
         File path = new File(directory);
         if (!path.exists()) {
             throw new RuntimeException("No directory found - " + directory);
@@ -124,22 +121,26 @@ public class FileUtil {
                 outputList.add(file);
             }
         }
-        System.out.println("There is " + outputList.size() + " files in folder " + path + ". ");
+        System.out.println("There is " + outputList.size() + " (" + regexp + ")-files in folder " + path + ". ");
         return outputList;
     }
 
     public static void copyFiles(String fileNameRegexp, String from, String to) {
         long startTime = System.currentTimeMillis();
-        List<File> allFiles = getFiles(from, fileNameRegexp);
+        List<File> allFiles = getFilesInDirectory(from, fileNameRegexp);
         StringBuilder logContent = new StringBuilder("Copying progress: \n");
         for (File file : allFiles) {
             System.out.println("Copying file: " + file.toString());
             try {
                 copyFile(file.toString(), to);
+            } catch (FileAlreadyExistsException e) {
+                System.out.println("There is already file " + file + ". \n\t" + e);
+                logContent.append(LocalDateTime.now() + ": WARNING! \n[" + file + "'] is already exist. \n");
             } catch (IOException e) {
                 System.out.println("Can not copy file " + file + ". \n\t" + e);
+                logContent.append(LocalDateTime.now() + ": ERROR! \n[" + file + "'] can not copy to [" + to + "]\n");
             }
-            logContent.append(LocalDateTime.now() + ": \n[" + file + "'] copied to [" + to + "]\n");
+            logContent.append(String.format("%s: \n[%s] (size %.1f Kb) copied to [%s]\n", LocalDateTime.now(), file.getName(), file.length() / 1024.0, to));
         }
         System.out.println("Copying finished!");
         logContent.append(String.format("Elapsed time %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0));
