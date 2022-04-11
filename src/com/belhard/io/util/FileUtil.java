@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class FileUtil {
-    public static final String LOG_FILENAME = "LOG.txt";
+    public static final String LOG_FILENAME = "LOG.log";
 
     public static String getTextContentFromFile(String fileName) {
         StringBuilder content = new StringBuilder();
@@ -128,19 +128,21 @@ public class FileUtil {
     public static void copyFiles(String fileNameRegexp, String from, String to) {
         long startTime = System.currentTimeMillis();
         List<File> allFiles = getFilesInDirectory(from, fileNameRegexp);
-        StringBuilder logContent = new StringBuilder("Copying progress: \n");
+        StringBuilder logContent = new StringBuilder(String.format("Copying progress: %n"));
+        int fileNumber = 0;
         for (File file : allFiles) {
             System.out.println("Copying file: " + file.toString());
             try {
+                logContent.append(String.format("%d. %32.32s (%.1f Kb) copying to [%s] at %s -> ", ++fileNumber, file.getName(), file.length() / 1024.0, to, LocalDateTime.now()));
                 copyFile(file.toString(), to);
+                logContent.append(String.format("DONE; %n"));
             } catch (IOException e) {
-                System.out.println("Can not copy file " + file + ". \n\t" + e);
-                logContent.append(String.format("ERROR: %25.25s (%.1f Kb) can not copy to [%s] at %s; \n", file, file.length() / 1024.0, to, LocalDateTime.now()));
+                System.out.println("Can not copy file " + file + ". %n\t" + e);
+                logContent.append(String.format("ERROR: Can not copy; %n"));
             }
-            logContent.append(String.format("%32.32s (%.1f Kb) copied to [%s] at %s; \n", file.getName(), file.length() / 1024.0, to, LocalDateTime.now()));
         }
         System.out.println("Copying finished!");
-        logContent.append(String.format("Elapsed time %.3g seconds. \n", (System.currentTimeMillis() - startTime) / 1000.0));
+        logContent.append(String.format("Elapsed time %.3g seconds. %n", (System.currentTimeMillis() - startTime) / 1000.0));
         saveToFile(logContent.toString(), to + LOG_FILENAME);
     }
 }
